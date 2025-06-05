@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="Style.css">
+  </head>
+    <body>
+    <!-- Ваш HTML остаётся без изменений -->
+    
+    <body>
+    <header>
+      <div class="top_bg">
+        <div class="header_top">
+          <img src="Img/header/F1.png" height="85" width="300">
+          <div>
+            <a class="top_footer_text" href="login.html">Вход</a>
+            <img src="Img/header/F2.png" height="80" width="80">
+          </div>
+        </div>
+    </div>
+    <div class="bot_bg">
+        <div class="header_bot">
+          <a class="bot_footer_text">Главная</a>
+          <a class="bot_footer_text" href="Mematicka_page1.html">Мематека</a>
+          <a class="bot_footer_text" href="Random.html" >Рандом</a>
+          <a class="bot_footer_text">Коллекция</a>
+          <a class="bot_footer_text" href="Eg.html">ЕГЭ</a>
+          <a class="bot_footer_text" href="About.html">О нас</a>
+        </div>
+    </div>
+    </header>
+
+    <main>
+      <section>
+         <div class="contener">
+        <div class="redactor">
+            <div class="red_zone" id="red-zone">
+                <div class="image" id="meme-image"></div>
+                <textarea id="meme-text" placeholder="Введите текст мема"></textarea>
+            </div>
+        </div>
+        <div class="buttons_conts">
+            <button id="create-btn" class="green_buttons">Создать мем</button>
+            <button id="upload-btn" class="gray_buttons">Загрузить изображение</button>
+            <input type="file" id="image-upload" accept="image/*" style="display: none;">
+        </div>
+    </div>
+        </section>
+      </section>
+      <section>
+        <div class="contener">
+          <p class="zag">Шаблоны</p>
+          <div class="blanks">
+            <img src="Img/Blanks/B1.png" >
+            <img src="Img/Blanks/B2.png" >
+            <img src="Img/Blanks/B3.png" >
+            <img src="Img/Blanks/B4.png" >
+            <img src="Img/Blanks/B5.png" >
+            <img src="Img/Blanks/B6.png" >
+            <img src="Img/Blanks/B7.png" >
+            <img src="Img/Blanks/B8.png" >
+          </div>
+        </div>
+      </section>
+      <canvas id="meme-canvas" style="display:none;"></canvas>
+    </main>
+    <footer>
+      <div class="footers">
+      <img src="Img/Foter/log.png" height="85" width="300">
+      <div>
+        <p class="zag">© MemGen.ru 2025</p>
+        <a class="zag f" href="About.html">Информация о нас </a>
+      </div>
+    </div>
+    </footer>
+ <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Загрузка изображения
+            const uploadBtn = document.getElementById('upload-btn');
+            const imageUpload = document.getElementById('image-upload');
+            const imageContainer = document.getElementById('meme-image');
+            
+            uploadBtn.addEventListener('click', function() {
+                imageUpload.click();
+            });
+            
+            imageUpload.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        imageContainer.style.backgroundImage = `url(${event.target.result})`;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Создание и сохранение мема
+            const createBtn = document.getElementById('create-btn');
+            const redZone = document.getElementById('red-zone');
+            
+            createBtn.addEventListener('click', function() {
+                // Используем html2canvas для сохранения всего блока red_zone
+                html2canvas(redZone, {
+                    scale: 2, // Увеличиваем качество в 2 раза
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true
+                }).then(canvas => {
+                    // Создаем ссылку для скачивания
+                    const link = document.createElement('a');
+                    link.download = 'my-meme.png';
+                    link.href = canvas.toDataURL('image/png');
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }).catch(err => {
+                    console.error('Ошибка при создании мема:', err);
+                    alert('Не удалось создать мем. Попробуйте снова.');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
