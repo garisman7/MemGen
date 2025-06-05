@@ -77,8 +77,8 @@
  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     
     <script>
+         // Часть 1: Загрузка изображения
         document.addEventListener('DOMContentLoaded', function() {
-            // Загрузка изображения
             const uploadBtn = document.getElementById('upload-btn');
             const imageUpload = document.getElementById('image-upload');
             const imageContainer = document.getElementById('meme-image');
@@ -98,19 +98,42 @@
                 }
             });
             
-            // Создание и сохранение мема
+            // Часть 2: Создание мема (ваш код)
             const createBtn = document.getElementById('create-btn');
             const redZone = document.getElementById('red-zone');
             
             createBtn.addEventListener('click', function() {
-                // Используем html2canvas для сохранения всего блока red_zone
                 html2canvas(redZone, {
-                    scale: 2, // Увеличиваем качество в 2 раза
+                    scale: 2,
                     logging: false,
                     useCORS: true,
-                    allowTaint: true
+                    allowTaint: true,
+                    onclone: function(clonedDoc) {
+                        const clonedTextarea = clonedDoc.getElementById('meme-text');
+                        if (clonedTextarea) {
+                            clonedTextarea.style.marginTop = '40px'; // Увеличенный отступ
+                            clonedTextarea.style.display = 'block';
+                        }
+                    }
                 }).then(canvas => {
-                    // Создаем ссылку для скачивания
+                    const ctx = canvas.getContext('2d');
+                    const text = document.getElementById('meme-text').value;
+                    
+                    if (text) {
+                        ctx.font = 'bold 24px Impact';
+                        ctx.textAlign = 'center';
+                        ctx.fillStyle = 'white';
+                        ctx.strokeStyle = 'black';
+                        ctx.lineWidth = 2;
+                        
+                        // Позиция текста (регулируйте последнее число)
+                        const textX = canvas.width / 2;
+                        const textY = canvas.height - 50; // Текст ближе к низу
+                        
+                        ctx.strokeText(text, textX, textY);
+                        ctx.fillText(text, textX, textY);
+                    }
+                    
                     const link = document.createElement('a');
                     link.download = 'my-meme.png';
                     link.href = canvas.toDataURL('image/png');
@@ -118,8 +141,8 @@
                     link.click();
                     document.body.removeChild(link);
                 }).catch(err => {
-                    console.error('Ошибка при создании мема:', err);
-                    alert('Не удалось создать мем. Попробуйте снова.');
+                    console.error('Ошибка:', err);
+                    alert('Ошибка при создании мема');
                 });
             });
         });
