@@ -33,19 +33,20 @@
 
     <main>
       <section>
-         <div class="contener">
-        <div class="redactor">
-            <div class="red_zone" id="red-zone">
-                <div class="image" id="meme-image"></div>
-                <textarea id="meme-text" placeholder="Введите текст мема"></textarea>
+            <div class="contener">
+          <p class="zag">Создать мем</p>
+          <div class="redactor">
+            <div class="red_zone">
+              <div class="image" id="meme-image"></div>
+              <textarea id="meme-text" placeholder="Текст"></textarea>
             </div>
-        </div>
-        <div class="buttons_conts">
-            <button id="create-btn" class="green_buttons">Создать мем</button>
+          </div>
+          <div class="buttons_conts">
+            <button id="create-btn" class="green_buttons">Создать</button>
             <button id="upload-btn" class="gray_buttons">Загрузить изображение</button>
             <input type="file" id="image-upload" accept="image/*" style="display: none;">
+          </div>
         </div>
-    </div>
         </section>
       </section>
       <section>
@@ -77,71 +78,106 @@
  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-    // ... ваш предыдущий код (загрузка изображения) ...
+      // Функция для кнопки "Загрузить изображение"
+      document.getElementById('upload-btn').addEventListener('click', function() {
+        document.getElementById('image-upload').click();
+      });
 
-    const createBtn = document.getElementById('create-btn');
-    const imageContainer = document.getElementById('meme-image');
-
-    createBtn.addEventListener('click', function() {
-        // Проверяем, есть ли загруженное изображение
-        if (!imageContainer.style.backgroundImage) {
-            alert('Сначала загрузите изображение!');
-            return;
+      document.getElementById('image-upload').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            const image = document.getElementById('meme-image');
+            image.style.backgroundImage = `url(${event.target.result})`;
+          };
+          reader.readAsDataURL(file);
         }
+      });
 
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const img = new Image();
+      // Функция для кнопки "Создать"
+      document.getElementById('create-btn').addEventListener('click', function() {
+        const canvas = document.getElementById('meme-canvas');
+        const redZone = document.querySelector('.red_zone');
+        const imageDiv = document.getElementById('meme-image');
         const text = document.getElementById('meme-text').value;
-
-        // Разрешаем загрузку изображений с других доменов (CORS)
-        img.crossOrigin = 'Anonymous';
-
-        img.onload = function() {
-            // Устанавливаем размер canvas = размеру изображения
-            canvas.width = img.width;
-            canvas.height = img.height;
-
+        
+        // Установим размеры canvas
+        canvas.width = redZone.offsetWidth;
+        canvas.height = redZone.offsetHeight;
+        
+        const ctx = canvas.getContext('2d');
+        
+        // Очищаем canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Получаем фоновое изображение
+        const backgroundImage = new Image();
+        const bgUrl = imageDiv.style.backgroundImage.slice(4, -1).replace(/"/g, "");
+        
+        if (bgUrl && bgUrl !== 'none') {
+          backgroundImage.src = bgUrl;
+          backgroundImage.onload = function() {
             // Рисуем изображение
-            ctx.drawImage(img, 0, 0);
-
+            ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+            
             // Добавляем текст
-            if (text) {
-                ctx.font = 'bold 48px Impact'; // Увеличиваем шрифт
-                ctx.textAlign = 'center';
-                ctx.fillStyle = 'white';
-                ctx.strokeStyle = 'black';
-                ctx.lineWidth = 3;
-
-                // Позиция текста (регулируйте по необходимости)
-                const textX = canvas.width / 2;
-                const textY = canvas.height - 50; // Текст внизу
-
-                // Рисуем текст с обводкой
-                ctx.strokeText(text, textX, textY);
-                ctx.fillText(text, textX, textY);
-            }
-
-            // Скачиваем мем
-            const link = document.createElement('a');
-            link.download = 'my-meme.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        };
-
-        // Обработка ошибок загрузки изображения
-        img.onerror = function() {
-            alert('Ошибка загрузки изображения!');
-        };
-
-        // Получаем URL изображения из background-image
-        const bgImage = imageContainer.style.backgroundImage;
-        if (bgImage) {
-            img.src = bgImage.slice(4, -1).replace(/"/g, '');
+            ctx.font = '30px Arial';
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 2;
+            ctx.textAlign = 'center';
+            
+            // Разбиваем текст на строки, если он слишком длинный
+            const lines = text.split('\n');
+            const lineHeight = 35;
+            const startY = canvas.height - (lines.length * lineHeight) - 20;
+            
+            lines.forEach((line, i) => {
+              const y = startY + (i * lineHeight);
+              ctx.strokeText(line, canvas.width / 2, y);
+              ctx.fillText(line, canvas.width / 2, y);
+            });
+            
+            // Сохраняем как изображение
+            saveCanvasAsImage();
+          };
+        } else {
+          // Если нет фонового изображения, просто добавляем текст
+          ctx.fillStyle = '#f0f0f0';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          ctx.font = '30px Arial';
+          ctx.fillStyle = 'black';
+          ctx.textAlign = 'center';
+          
+          const lines = text.split('\n');
+          const lineHeight = 35;
+          const startY = canvas.height / 2 - (lines.length * lineHeight) / 2;
+          
+          lines.forEach((line, i) => {
+            const y = startY + (i * lineHeight);
+            ctx.fillText(line, canvas.width / 2, y);
+          });
+          
+          saveCanvasAsImage();
         }
-    });
-});
+      });
+
+      function saveCanvasAsImage() {
+        const canvas = document.getElementById('meme-canvas');
+        const link = document.createElement('a');
+        link.download = 'meme.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      }
+
+      // Добавляем обработчики для шаблонов
+      document.querySelectorAll('.blanks img').forEach(img => {
+        img.addEventListener('click', function() {
+          document.getElementById('meme-image').style.backgroundImage = `url(${this.src})`;
+        });
+      });
     </script>
 </body>
 </html>
