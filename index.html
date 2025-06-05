@@ -78,51 +78,70 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Загрузка изображения
-            const uploadBtn = document.getElementById('upload-btn');
-            const imageUpload = document.getElementById('image-upload');
-            const imageContainer = document.getElementById('meme-image');
-            
-            uploadBtn.addEventListener('click', function() {
-                imageUpload.click();
-            });
-            
-            imageUpload.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        imageContainer.style.backgroundImage = `url(${event.target.result})`;
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-            
-            // Создание и сохранение мема
-            const createBtn = document.getElementById('create-btn');
-            const redZone = document.getElementById('red-zone');
-            
-            createBtn.addEventListener('click', function() {
-                // Используем html2canvas для сохранения всего блока red_zone
-                html2canvas(redZone, {
-                    scale: 2, // Увеличиваем качество в 2 раза
-                    logging: false,
-                    useCORS: true,
-                    allowTaint: true
-                }).then(canvas => {
-                    // Создаем ссылку для скачивания
-                    const link = document.createElement('a');
-                    link.download = 'my-meme.png';
-                    link.href = canvas.toDataURL('image/png');
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                }).catch(err => {
-                    console.error('Ошибка при создании мема:', err);
-                    alert('Не удалось создать мем. Попробуйте снова.');
-                });
-            });
-        });
+    // ... ваш предыдущий код (загрузка изображения) ...
+
+    const createBtn = document.getElementById('create-btn');
+    const imageContainer = document.getElementById('meme-image');
+
+    createBtn.addEventListener('click', function() {
+        // Проверяем, есть ли загруженное изображение
+        if (!imageContainer.style.backgroundImage) {
+            alert('Сначала загрузите изображение!');
+            return;
+        }
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        const text = document.getElementById('meme-text').value;
+
+        // Разрешаем загрузку изображений с других доменов (CORS)
+        img.crossOrigin = 'Anonymous';
+
+        img.onload = function() {
+            // Устанавливаем размер canvas = размеру изображения
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            // Рисуем изображение
+            ctx.drawImage(img, 0, 0);
+
+            // Добавляем текст
+            if (text) {
+                ctx.font = 'bold 48px Impact'; // Увеличиваем шрифт
+                ctx.textAlign = 'center';
+                ctx.fillStyle = 'white';
+                ctx.strokeStyle = 'black';
+                ctx.lineWidth = 3;
+
+                // Позиция текста (регулируйте по необходимости)
+                const textX = canvas.width / 2;
+                const textY = canvas.height - 50; // Текст внизу
+
+                // Рисуем текст с обводкой
+                ctx.strokeText(text, textX, textY);
+                ctx.fillText(text, textX, textY);
+            }
+
+            // Скачиваем мем
+            const link = document.createElement('a');
+            link.download = 'my-meme.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        };
+
+        // Обработка ошибок загрузки изображения
+        img.onerror = function() {
+            alert('Ошибка загрузки изображения!');
+        };
+
+        // Получаем URL изображения из background-image
+        const bgImage = imageContainer.style.backgroundImage;
+        if (bgImage) {
+            img.src = bgImage.slice(4, -1).replace(/"/g, '');
+        }
+    });
+});
     </script>
 </body>
 </html>
