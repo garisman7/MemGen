@@ -33,10 +33,10 @@
 
     <main>
       <section>
-            <div class="contener">
+        <div class="contener">
           <p class="zag">Создать мем</p>
           <div class="redactor">
-            <div class="red_zone">
+            <div class="red_zone" id="red-zone">
               <div class="image" id="meme-image"></div>
               <textarea id="meme-text" placeholder="Текст"></textarea>
             </div>
@@ -47,7 +47,7 @@
             <input type="file" id="image-upload" accept="image/*" style="display: none;">
           </div>
         </div>
-        </section>
+      </section>
       </section>
       <section>
         <div class="contener">
@@ -75,10 +75,10 @@
       </div>
     </div>
     </footer>
- <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
     
     <script>
-      // Функция для кнопки "Загрузить изображение"
+    // Функция для кнопки "Загрузить изображение"
       document.getElementById('upload-btn').addEventListener('click', function() {
         document.getElementById('image-upload').click();
       });
@@ -97,85 +97,19 @@
 
       // Функция для кнопки "Создать"
       document.getElementById('create-btn').addEventListener('click', function() {
+        const redZone = document.getElementById('red-zone');
         const canvas = document.getElementById('meme-canvas');
-        const redZone = document.querySelector('.red_zone');
-        const imageDiv = document.getElementById('meme-image');
-        const text = document.getElementById('meme-text').value;
         
-        // Установим размеры canvas
-        canvas.width = redZone.offsetWidth;
-        canvas.height = redZone.offsetHeight;
-        
-        const ctx = canvas.getContext('2d');
-        
-        // Очищаем canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // Получаем фоновое изображение
-        const backgroundImage = new Image();
-        const bgUrl = imageDiv.style.backgroundImage.slice(4, -1).replace(/"/g, "");
-        
-        if (bgUrl && bgUrl !== 'none') {
-          backgroundImage.src = bgUrl;
-          backgroundImage.onload = function() {
-            // Рисуем изображение
-            ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-            
-            // Добавляем текст
-            ctx.font = '30px Arial';
-            ctx.fillStyle = 'white';
-            ctx.strokeStyle = 'black';
-            ctx.lineWidth = 2;
-            ctx.textAlign = 'center';
-            
-            // Разбиваем текст на строки, если он слишком длинный
-            const lines = text.split('\n');
-            const lineHeight = 35;
-            const startY = canvas.height - (lines.length * lineHeight) - 20;
-            
-            lines.forEach((line, i) => {
-              const y = startY + (i * lineHeight);
-              ctx.strokeText(line, canvas.width / 2, y);
-              ctx.fillText(line, canvas.width / 2, y);
-            });
-            
-            // Сохраняем как изображение
-            // Сохраняем как изображение
-            saveCanvasAsImage();
-          };
-        } else {
-          // Если нет фонового изображения, просто добавляем текст
-          ctx.fillStyle = '#f0f0f0';
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          
-          ctx.font = '30px Arial';
-          ctx.fillStyle = 'black';
-          ctx.textAlign = 'center';
-          
-          const lines = text.split('\n');
-          const lineHeight = 35;
-          const startY = canvas.height / 2 - (lines.length * lineHeight) / 2;
-          
-          lines.forEach((line, i) => {
-            const y = startY + (i * lineHeight);
-            ctx.fillText(line, canvas.width / 2, y);
-          });
-          
-          saveCanvasAsImage();
-        }
+        // Используем html2canvas для захвата всего red_zone
+        html2canvas(redZone).then(canvas => {
+          // Создаем ссылку для скачивания
+          const link = document.createElement('a');
+          link.download = 'meme.png';
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+        });
       });
 
-      function saveCanvasAsImage() {
-        const canvas = document.getElementById('meme-canvas');
-        const link = document.createElement('a');
-        link.download = 'meme.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-      }
-
-      // Добавляем обработчики для шаблонов
-      // Добавляем обработчики для шаблонов
-      // Добавляем обработчики для шаблонов
       // Добавляем обработчики для шаблонов
       document.querySelectorAll('.blanks img').forEach(img => {
         img.addEventListener('click', function() {
@@ -183,5 +117,6 @@
         });
       });
     </script>
+       <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </body>
 </html>
