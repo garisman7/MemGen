@@ -78,80 +78,75 @@
     
     <script>
          // Часть 1: Загрузка изображения
-        document.addEventListener('DOMContentLoaded', function() {
-            const uploadBtn = document.getElementById('upload-btn');
-            const imageUpload = document.getElementById('image-upload');
-            const imageContainer = document.getElementById('meme-image');
-            
-            uploadBtn.addEventListener('click', function() {
-                imageUpload.click();
-            });
-            
-            imageUpload.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        imageContainer.style.backgroundImage = `url(${event.target.result})`;
-                    };
-                    reader.readAsDataURL(file);
+      document.addEventListener('DOMContentLoaded', function() {
+    const uploadBtn = document.getElementById('upload-btn');
+    const imageUpload = document.getElementById('image-upload');
+    const imageContainer = document.getElementById('meme-image');
+    
+    uploadBtn.addEventListener('click', function() {
+        imageUpload.click();
+    });
+    
+    imageUpload.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                imageContainer.style.backgroundImage = `url(${event.target.result})`;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // 🔥 ВСТАВЬТЕ ЭТОТ БЛОК КОДА (ЗАМЕНИВ СТАРУЮ ВЕРСИЮ) 🔥
+    const createBtn = document.getElementById('create-btn');
+    const redZone = document.getElementById('red-zone');
+    
+    createBtn.addEventListener('click', function() {
+        html2canvas(redZone, {
+            scale: 2,
+            logging: false,
+            useCORS: true,
+            allowTaint: true,
+            onclone: function(clonedDoc) {
+                const clonedTextarea = clonedDoc.getElementById('meme-text');
+                if (clonedTextarea) {
+                    clonedTextarea.style.margin = '0';
+                    clonedTextarea.style.display = 'block';
+                    clonedTextarea.style.position = 'absolute';
+                    clonedTextarea.style.bottom = '10%';
+                    clonedTextarea.style.left = '50%';
+                    clonedTextarea.style.transform = 'translateX(-50%)';
                 }
-            });
-            
-            // Часть 2: Создание мема (ваш код)
-            const createBtn = document.getElementById('create-btn');
-            const redZone = document.getElementById('red-zone');
-            
-            createBtn.addEventListener('click', function() {
-                html2canvas(redZone, {
-                    scale: 2,
-                    logging: false,
-                    useCORS: true,
-                    allowTaint: true,
-                    onclone: function(clonedDoc) {
-                        const clonedTextarea = clonedDoc.getElementById('meme-text');
-                        if (clonedTextarea) {
-                              clonedTextarea.style.marginTop = '40px';
-        clonedTextarea.style.display = 'block';
-        clonedTextarea.style.width = '100%'; // На всю ширину
-        clonedTextarea.style.background = 'transparent'; // Прозрачный фон
-        clonedTextarea.style.border = 'none'; // Убрать рамку
-        clonedTextarea.style.color = 'white'; // Цвет текста
-        clonedTextarea.style.textAlign = 'center'; // Центрирование
-         clonedTextarea.style.zindex = '1000'; // Центрирование
-                        }
-                    }
-                }).then(canvas => {
-                    const ctx = canvas.getContext('2d');
-                    const text = document.getElementById('meme-text').value;
-                    
-                    if (text) {
-                        ctx.font = 'bold 24px Impact';
-                        ctx.textAlign = 'center';
-                        ctx.fillStyle = 'white';
-                        ctx.strokeStyle = 'black';
-                        ctx.lineWidth = 2;
-                        
-                        // Позиция текста (регулируйте последнее число)
-                        const textX = canvas.width / 2;
-                        const textY = canvas.height - 50; // Текст ближе к низу
-                        
-                        ctx.strokeText(text, textX, textY);
-                        ctx.fillText(text, textX, textY);
-                    }
-                    
-                    const link = document.createElement('a');
-                    link.download = 'meme.png';
-                    link.href = canvas.toDataURL('image/png');
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                }).catch(err => {
-                    console.error('Ошибка:', err);
-                    alert('Ошибка при создании мема');
-                });
-            });
+            }
+        }).then(canvas => {
+            const ctx = canvas.getContext('2d');
+            const text = document.getElementById('meme-text').value;
+
+            if (text) {
+                ctx.font = 'bold 48px Impact';
+                ctx.textAlign = 'center';
+                ctx.fillStyle = 'white';
+                ctx.strokeStyle = 'black';
+                ctx.lineWidth = 3;
+                
+                const textX = canvas.width / 2;
+                const textY = canvas.height - 40;
+                
+                ctx.strokeText(text, textX, textY);
+                ctx.fillText(text, textX, textY);
+            }
+
+            const link = document.createElement('a');
+            link.download = 'my-meme.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }).catch(err => {
+            console.error('Ошибка:', err);
+            alert('Ошибка при создании мема');
         });
+    });
+});
     </script>
 </body>
 </html>
