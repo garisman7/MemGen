@@ -111,8 +111,14 @@
                     onclone: function(clonedDoc) {
                         const clonedTextarea = clonedDoc.getElementById('meme-text');
                         if (clonedTextarea) {
-                            clonedTextarea.style.marginTop = '40px'; // Увеличенный отступ
-                            clonedTextarea.style.display = 'block';
+                              clonedTextarea.style.marginTop = '40px';
+        clonedTextarea.style.display = 'block';
+        clonedTextarea.style.width = '100%'; // На всю ширину
+        clonedTextarea.style.background = 'transparent'; // Прозрачный фон
+        clonedTextarea.style.border = 'none'; // Убрать рамку
+        clonedTextarea.style.color = 'white'; // Цвет текста
+        clonedTextarea.style.textAlign = 'center'; // Центрирование
+         clonedTextarea.style.zindex = '1000'; // Центрирование
                         }
                     }
                 }).then(canvas => {
@@ -135,7 +141,7 @@
                     }
                     
                     const link = document.createElement('a');
-                    link.download = 'my-meme.png';
+                    link.download = 'meme.png';
                     link.href = canvas.toDataURL('image/png');
                     document.body.appendChild(link);
                     link.click();
