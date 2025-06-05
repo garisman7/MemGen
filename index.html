@@ -77,76 +77,52 @@
  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     
     <script>
-         // Часть 1: Загрузка изображения
-      document.addEventListener('DOMContentLoaded', function() {
-    const uploadBtn = document.getElementById('upload-btn');
-    const imageUpload = document.getElementById('image-upload');
-    const imageContainer = document.getElementById('meme-image');
-    
-    uploadBtn.addEventListener('click', function() {
-        imageUpload.click();
-    });
-    
-    imageUpload.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                imageContainer.style.backgroundImage = `url(${event.target.result})`;
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-    
-    // 🔥 ВСТАВЬТЕ ЭТОТ БЛОК КОДА (ЗАМЕНИВ СТАРУЮ ВЕРСИЮ) 🔥
-    const createBtn = document.getElementById('create-btn');
-    const redZone = document.getElementById('red-zone');
-    
-    createBtn.addEventListener('click', function() {
-        html2canvas(redZone, {
-            scale: 2,
-            logging: false,
-            useCORS: true,
-            allowTaint: true,
-            onclone: function(clonedDoc) {
-                const clonedTextarea = clonedDoc.getElementById('meme-text');
-                if (clonedTextarea) {
-                    clonedTextarea.style.margin = '0';
-                    clonedTextarea.style.display = 'block';
-                    clonedTextarea.style.position = 'absolute';
-                    clonedTextarea.style.bottom = '10%';
-                    clonedTextarea.style.left = '50%';
-                    clonedTextarea.style.transform = 'translateX(-50%)';
+        document.addEventListener('DOMContentLoaded', function() {
+            // Загрузка изображения
+            const uploadBtn = document.getElementById('upload-btn');
+            const imageUpload = document.getElementById('image-upload');
+            const imageContainer = document.getElementById('meme-image');
+            
+            uploadBtn.addEventListener('click', function() {
+                imageUpload.click();
+            });
+            
+            imageUpload.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        imageContainer.style.backgroundImage = `url(${event.target.result})`;
+                    };
+                    reader.readAsDataURL(file);
                 }
-            }
-        }).then(canvas => {
-            const ctx = canvas.getContext('2d');
-            const text = document.getElementById('meme-text').value;
-
-            if (text) {
-                ctx.font = 'bold 48px Impact';
-                ctx.textAlign = 'center';
-                ctx.fillStyle = 'white';
-                ctx.strokeStyle = 'black';
-                ctx.lineWidth = 3;
-                
-                const textX = canvas.width / 2;
-                const textY = canvas.height - 40;
-                
-                ctx.strokeText(text, textX, textY);
-                ctx.fillText(text, textX, textY);
-            }
-
-            const link = document.createElement('a');
-            link.download = 'my-meme.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        }).catch(err => {
-            console.error('Ошибка:', err);
-            alert('Ошибка при создании мема');
+            });
+            
+            // Создание и сохранение мема
+            const createBtn = document.getElementById('create-btn');
+            const redZone = document.getElementById('red-zone');
+            
+            createBtn.addEventListener('click', function() {
+                // Используем html2canvas для сохранения всего блока red_zone
+                html2canvas(redZone, {
+                    scale: 2, // Увеличиваем качество в 2 раза
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true
+                }).then(canvas => {
+                    // Создаем ссылку для скачивания
+                    const link = document.createElement('a');
+                    link.download = 'my-meme.png';
+                    link.href = canvas.toDataURL('image/png');
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }).catch(err => {
+                    console.error('Ошибка при создании мема:', err);
+                    alert('Не удалось создать мем. Попробуйте снова.');
+                });
+            });
         });
-    });
-});
     </script>
 </body>
 </html>
