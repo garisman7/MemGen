@@ -292,7 +292,7 @@ footer{
     position: absolute;
     left: 7%;
     top:6%;
-    background-image: url(Img/User_img/test.png);
+    background-image: none;
     background-repeat: no-repeat;
     background-size:100% 100%;
     width: 85%;
